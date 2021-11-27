@@ -8,8 +8,8 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 uint8_t step = 0;
 uint8_t x = 0, y = 0;
 uint32_t last = 0;
-uint8_t bpm = 130;
-uint8_t gatePercent = 85;
+uint8_t bpm = 120;
+uint8_t gatePercent = 80;
 uint16_t tempoMS = 60.0 / bpm / 4.0 * 1000;
 
 #define trackLength 64
@@ -20,6 +20,7 @@ uint64_t track[numTracks];
 ShiftRegister74HC595<2> sr(6, 7, 8); // parameters: <number of shift registers> (data pin, clock pin, latch pin)
 
 void updateDisplay();
+void setGate(uint8_t percent);
 
 void setup()
 {
@@ -39,15 +40,20 @@ void setup()
   track[13] = 0b0001000000010000000000000000000000000000000000000000000000000000; // clap / snare
   track[14] = 0b0100010001000100000000000000000000000000000000000000000000000000; // o-hh
   track[15] = 0b1011101110111011000000000000000000000000000000000000000000000000; // c-hh
-  lcd.begin(16, 2);
   
-  sr.setAllLow();  
+  sr.setAllLow();
+  lcd.begin(16, 2);  
+  setGate(gatePercent);
 }
 
 bool cleared;
 
 void loop()
 {
+
+  if (step % 16 == 0) {
+    setGate(random(10,100));
+  }
 
   uint32_t now = millis();
   uint32_t elapsed = now - last;
@@ -69,6 +75,21 @@ void loop()
   delay(10);
 }
 
+void setGate(uint8_t percent) {
+
+  gatePercent = percent;
+  uint8_t glyph[8];
+  uint8_t lines = 8.0 * percent / 100.0;
+  for (uint8_t i = 0; i < 8; i ++) {
+    if (i <= lines) {
+      glyph[7-i] = 0b11111;
+    } else {
+      glyph[7-i] = 0b00000;
+    }
+  }
+  lcd.createChar(0, glyph);
+}
+
 void updateDisplay()
 {
   byte bar = step/16 + 1;
@@ -77,20 +98,20 @@ void updateDisplay()
   
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("bpm:" + String(bpm) + " | " + String(bar) + "-" + String(quarter) + "-" + String(sixteenth));
+  lcd.print(String(bar) + "-" + String(quarter) + "-" + String(sixteenth));
+  lcd.setCursor(9,0);
+  lcd.print("bpm:" + String(bpm));
 
   uint16_t stepData;
 
   for (byte i = 0; i < numTracks; i++)
   {
-    char c = char(32);
     if (bitRead(track[i], step)) {
       bitSet(stepData, i);
-      c = char(255);
-    }
-      
-    lcd.setCursor(i, 1);
-    lcd.print(c);
+      lcd.setCursor(i, 1);
+      lcd.write(byte(0));
+    }  
+    
   }
 
   uint8_t regData[] = {(uint8_t) (stepData << 8), (uint8_t) stepData};
