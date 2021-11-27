@@ -8,7 +8,7 @@ uint8_t step = 0;
 uint8_t x = 0, y = 0;
 uint32_t last = 0;
 byte bpm = 78;
-uint16_t tempoMS = 60.0 / bpm / 4.0 * 1000;// 125;
+uint16_t tempoMS = 60.0 / bpm / 4.0 * 1000;
 
 #define trackLength 64
 #define numTracks   16
