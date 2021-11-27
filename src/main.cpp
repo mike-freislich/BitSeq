@@ -11,7 +11,6 @@ uint32_t last = 0;
 String buffer1 = "                ";
 String buffer2 = "                ";
 
-void make_smiley(byte index);
 void updateDisplay();
 void updateBuffer();
 
@@ -25,22 +24,6 @@ void loop()
   updateBuffer();
   updateDisplay();
   delay(500);
-}
-
-void make_smiley(byte index)
-{
-  byte smiley[8] = {
-      B00000,
-      B10001,
-      B00000,
-      B00000,
-      B10001,
-      B01110,
-      B11111,
-      B11111
-  };
-
-  lcd.createChar(index, smiley);
 }
 
 void updateBuffer()
