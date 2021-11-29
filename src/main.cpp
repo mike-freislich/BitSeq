@@ -2,7 +2,7 @@
 #include <LiquidCrystal.h>
 #include <ShiftRegister74HC595.h>
 
-const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+const int rs = 1, en = 4, d4 = 5, d5 = 6, d6 = 7, d7 = 3;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 uint8_t step = 0;
@@ -17,13 +17,15 @@ uint16_t tempoMS = 60.0 / bpm / 4.0 * 1000;
 uint8_t patternLength = 16*4;
 uint64_t track[numTracks];   
 
-ShiftRegister74HC595<2> sr(6, 7, 8); // parameters: <number of shift registers> (data pin, clock pin, latch pin)
+//ShiftRegister74HC595<2> sr(6, 7, 8); // parameters: <number of shift registers> (data pin, clock pin, latch pin)
 
 void updateDisplay();
 void setGate(uint8_t percent);
 
 void setup()
 {
+  //Serial.begin(19200);
+  //Serial.println("testing");
   track[0]  = 0b0001000100010001000100010001000100010001000100010001000100010001; // kick drum
   track[1]  = 0b0001000000010000000100000001000000010000000100000001000000010000; // clap / snare
   track[2]  = 0b0100010001000100010001000100010001000100010001000100010001000100; // o-hh
@@ -41,7 +43,7 @@ void setup()
   track[14] = 0b0100010001000100000000000000000000000000000000000000000000000000; // o-hh
   track[15] = 0b1011101110111011000000000000000000000000000000000000000000000000; // c-hh
   
-  sr.setAllLow();
+  //sr.setAllLow();
   lcd.begin(16, 2);  
   setGate(gatePercent);
 }
@@ -59,7 +61,7 @@ void loop()
   uint32_t elapsed = now - last;
 
   if (!cleared && (elapsed >= tempoMS * gatePercent/100.0)) {
-    sr.setAllLow();
+    //sr.setAllLow();
     //lcd.clear();
     cleared = true;
   }
@@ -114,7 +116,7 @@ void updateDisplay()
     
   }
 
-  uint8_t regData[] = {(uint8_t) (stepData << 8), (uint8_t) stepData};
-  sr.setAll(regData);
+  //uint8_t regData[] = {(uint8_t) (stepData << 8), (uint8_t) stepData};
+  //sr.setAll(regData);
   
 }
