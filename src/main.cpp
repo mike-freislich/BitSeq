@@ -9,8 +9,8 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 uint8_t step = 0;
 uint8_t x = 0, y = 0;
 uint32_t last = 0;
-uint8_t bpm = 75;
-uint8_t gatePercent = 90;
+uint8_t bpm = 120;
+uint8_t gatePercent = 80;
 uint16_t tempoMS = 60.0 / bpm / 4.0 * 1000;
 
 #define trackLength 64
@@ -48,6 +48,7 @@ void setup()
   createChars();
   lcd.noCursor();
   setGate(90);
+  bitSet
 }
 
 bool cleared;
